@@ -37,12 +37,55 @@ class Database:
 
     def add_extract(self, dic):
         '''link image information with current graph'''
-#        self.im_extract = {
-#            im_names : list_ids for im_names, list_ids in dic.items()
-#        }
         self.im_extract.append((dic, copy.deepcopy(self.graph)))
 
-    def get_extract_status(self, img):
-        '''give the status of an image'''
-        #Comparison of current self.graph and graph existing at 'add_extract' creation
+    def get_extract_status(self):
+        '''give the status of each image in add_extract dictionary'''
 
+        def invalid_label_test(list_labels, dic):
+            '''check if the value exist in the dictionary'''
+            for label in list_labels:
+                if label not in dic.keys():
+                    list_values = list(dic.values())
+                    list_values = list_values[1:]
+                    flatten_values = [
+                        item for values in list_values for item in values
+                    ]
+                    if label not in flatten_values:
+                        return True
+            return False
+
+        def coverage_test(list_labels, initial_graph, new_graph):
+            '''Check if coverage staging has been created meanwhile'''
+            for label in list_labels:
+                for key, list_items in initial_graph.items():
+                    if key == 'core':
+                        pass
+                    elif label in list_items:
+                        if len(initial_graph[key]) != len(new_graph[key]):
+                            return True
+            return False
+
+        def granularity_test(list_labels, initial_graph, new_graph):
+            '''Check if granularity staging has been created meanwhile'''
+            for label in list_labels:
+                if label in initial_graph.keys():
+                    if len(initial_graph[label]) != len(new_graph[label]):
+                        return True
+            return False
+
+        status = dict()
+        associate_graph = self.im_extract[0][1]
+        for img_name, list_label in self.im_extract[0][0].items():
+            print(f"img_name {img_name}, list_label {list_label}")
+            if invalid_label_test(list_label, associate_graph):
+                status[img_name] = "invalid"
+            elif associate_graph == self.graph:
+                status[img_name] = "valid"
+            elif coverage_test(list_label, associate_graph, self.graph):
+                status[img_name] = "coverage_staged"
+            elif granularity_test(list_label, associate_graph, self.graph):
+                status[img_name] = "granularity_staged"
+            else:
+                status[img_name] = "valid"
+        return status
