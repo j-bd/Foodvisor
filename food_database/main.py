@@ -47,14 +47,12 @@ def proceed_food_data(build, extract, edits):
 
 def main():
     '''Setup test'''
-    # Test1
     logging.info("Test 1")
     status = proceed_food_data(
         constants.BUILD_1, constants.EXTRACT_1, constants.EDITS_1
     )
     check_values(constants.EX_ANSWER_1, status)
 
-    # Test2
     logging.info("Test 2")
     status = proceed_food_data(
         constants.BUILD, constants.EXTRACT, constants.EDITS
