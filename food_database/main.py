@@ -32,7 +32,7 @@ def check_values(solution, status):
 
 def proceed_food_data(build, extract, edits):
     '''Execute test'''
-    if len(build) > 0:
+    if build:
         # Build graph
         db = database.Database(build[0][0])
         if len(build) > 1:
