@@ -16,15 +16,15 @@ class Database:
     def __init__(self, root_node):
         '''create a new object with the following base structure'''
         self.name = root_node
-        self.graph = {self.name : None}
+        self.graph = {self.name : [None]}
         self.im_extract = list()
 
     def add_nodes(self, list_tup):
         '''edit graph with parents and children nodes'''
         for child_id, parent_id in list_tup:
-            if parent_id == self.name:
+            print(f"child_id {child_id}, parent_id {parent_id}")
+            if parent_id in self.graph.keys():
                 self.graph[child_id] = list()
-            elif parent_id in self.graph.keys():
                 list_child = self.graph[parent_id]
                 list_child.append(child_id)
                 self.graph[parent_id] = list_child
