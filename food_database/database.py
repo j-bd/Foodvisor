@@ -8,7 +8,7 @@ Created on Tue Nov 19 09:22:48 2019
 import logging
 import copy
 
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.ERROR)
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 class Database:
     '''class making able to create items and linked with sub-items'''
@@ -22,7 +22,6 @@ class Database:
     def add_nodes(self, list_tup):
         '''edit graph with parents and children nodes'''
         for child_id, parent_id in list_tup:
-            print(f"child_id {child_id}, parent_id {parent_id}")
             if parent_id in self.graph.keys():
                 self.graph[child_id] = list()
                 list_child = self.graph[parent_id]
