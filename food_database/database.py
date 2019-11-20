@@ -20,7 +20,7 @@ class Database:
         self.im_extract = list()
 
     def add_nodes(self, list_tup):
-        '''edit graph with parents and childre nodes'''
+        '''edit graph with parents and children nodes'''
         for child_id, parent_id in list_tup:
             if parent_id == self.name:
                 self.graph[child_id] = list()
@@ -77,7 +77,6 @@ class Database:
         status = dict()
         associate_graph = self.im_extract[0][1]
         for img_name, list_label in self.im_extract[0][0].items():
-            print(f"img_name {img_name}, list_label {list_label}")
             if invalid_label_test(list_label, associate_graph):
                 status[img_name] = "invalid"
             elif associate_graph == self.graph:
