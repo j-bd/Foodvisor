@@ -72,25 +72,26 @@ class TomatoDetection:
         # Split in 16 batch
         self.batch_test_ds = full_test_ds.batch(16)
 
-    def display_loss_accuracy(self, list_hist, epochs):
+    def display_loss_accuracy(self, list_hist, epochs, name):
         '''Display loss and accuracy informations in a graph'''
+        loss, accuracy = list_hist.keys()
         plt.figure("Training history", figsize=(15.0, 5.0))
         plt.subplot(121)
-        plt.plot(range(1, len(list_hist['loss']) + 1), list_hist['loss'], label="loss function")
+        plt.plot(range(1, len(list_hist[loss]) + 1), list_hist[loss], label="loss function")
         plt.title("Loss function evolution")
         plt.legend()
         plt.xlabel("Number of iterations")
         plt.ylabel("Loss value")
         plt.subplot(122)
-        plt.plot(range(1, len(list_hist['binary_accuracy']) + 1), list_hist['binary_accuracy'], label="accuracy")
+        plt.plot(range(1, len(list_hist[accuracy]) + 1), list_hist[accuracy], label="accuracy")
         plt.title("Accuracy evolution")
         plt.legend()
         plt.xlabel("Number of iterations")
         plt.ylabel("Accuracy value")
         plt.show()
-        plt.savefig(f"hm_cnn_model-im_s{self.im_resize}-ep{epochs}-Training.png")
+        plt.savefig(f"{name}-im_s{self.im_resize}-ep{epochs}-Training.png")
 
-    def confusion_matrix(self, model, epochs):
+    def confusion_matrix(self, model, epochs, name):
         '''Display and save a confusion matrix heatmap'''
         y_true = []
         y_pred = []
@@ -102,7 +103,45 @@ class TomatoDetection:
         cm = confusion_matrix(y_true, y_pred)
         plt.figure("Confusion matrix")
         sns.heatmap(cm, annot=True, fmt='d')
-        plt.savefig(f"hm_cnn_model-im_s{self.im_resize}-ep{epochs}-Confusion_matrix.png")
+        plt.savefig(f"{name}-im_s{self.im_resize}-ep{epochs}-Confusion_matrix.png")
+
+    def xception_cnn(self, epochs):
+        '''Use a pre-trained model to realize detection'''
+        def model(batch_ds, epochs):
+            '''Xception model adaptation'''
+            model = tf.keras.applications.xception.Xception(
+                input_shape=(self.im_resize, self.im_resize, 3),
+                include_top = False, weights = "imagenet"
+            )
+            model.trainable = False
+            model = tf.keras.Sequential([
+                model, tf.keras.layers.GlobalAveragePooling2D(),
+                tf.keras.layers.Dense(2, activation="softmax")
+            ])
+            initial_learning_rate = 0.001
+
+            lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+                initial_learning_rate, decay_steps=1000, decay_rate=0.96,
+                staircase=True
+            )
+            model.compile(
+                optimizer=tf.keras.optimizers.Adam(learning_rate = lr_schedule),
+                loss = tf.keras.losses.SparseCategoricalCrossentropy(),
+                metrics = [tf.keras.metrics.SparseCategoricalAccuracy()
+            ])
+            model.summary()
+            hist = model.fit(batch_ds, epochs=epochs)
+            return model, hist
+
+        model, hist = model(self.batch_train_ds, epochs)
+        self.display_loss_accuracy(hist.history, epochs, "xception_le_tr_model")
+
+        model.evaluate(self.batch_test_ds)
+
+        self.confusion_matrix(model, epochs, "xception_le_tr_model")
+
+        model.save_weights(f"xception_le_tr_model-im_s{self.im_resize}-ep{epochs}.h5")
+
 
     def home_made_cnn(self, epochs):
         '''Use an home made CNN to detect tomatoes'''
@@ -149,13 +188,13 @@ class TomatoDetection:
 #            plt.show()
 
         model, hist = model(self.batch_train_ds, epochs)
-        self.display_loss_accuracy(hist.history, epochs)
+        self.display_loss_accuracy(hist.history, epochs, "hm_cnn_model")
 
         model.evaluate(self.batch_test_ds)
 
 #        # Display the worst prediction
 #        most_confused(model, 0.8)
 
-        self.confusion_matrix(model, epochs)
+        self.confusion_matrix(model, epochs, "hm_cnn_model")
 
         model.save_weights(f"hm_cnn_model-im_s{self.im_resize}-ep{epochs}.h5")
