@@ -30,6 +30,24 @@ class TomatoDetection:
     def home_made_cnn(self, im_size, epochs):
         '''Use an home made CNN to detect tomatoes'''
 
+        def display_loss_accuracy(list_hist):
+            '''Display loss and accuracy informations in a graph'''
+            plt.figure("Training history", figsize=(15.0, 5.0))
+            plt.subplot(121)
+            plt.plot(range(1, len(list_hist['loss']) + 1), list_hist['loss'], label="loss function")
+            plt.title("Loss function evolution")
+            plt.legend()
+            plt.xlabel("Number of iterations")
+            plt.ylabel("Loss value")
+            plt.subplot(122)
+            plt.plot(range(1, len(list_hist['binary_accuracy']) + 1), list_hist['binary_accuracy'], label="accuracy")
+            plt.title("Accuracy evolution")
+            plt.legend()
+            plt.xlabel("Number of iterations")
+            plt.ylabel("Accuracy value")
+            plt.show()
+            plt.savefig(f"hm_cnn_model-im_s{im_size}-ep{epochs}-Training.png")
+
         def load_and_preprocess_images(img):
             '''Preprocess the images and data augmentation for train'''
             img = tf.io.read_file(img)
@@ -48,7 +66,7 @@ class TomatoDetection:
             img = img / 255.0
             return img
 
-        def model():
+        def model(batch_ds, epochs):
             # Création d'un model
             model = tf.keras.Sequential([
                 tf.keras.layers.Conv2D(filters=32, kernel_size=3, padding="same", activation="relu", input_shape=[im_size, im_size, 3]),
@@ -75,8 +93,8 @@ class TomatoDetection:
             model.compile(optimizer = tf.keras.optimizers.Adam(lr_schedule),
                           loss= tf.keras.losses.binary_crossentropy,
                           metrics = [tf.keras.metrics.binary_accuracy])
-            model.fit(batch_ds, epochs=epochs)
-            return model
+            hist = model.fit(batch_ds, epochs=epochs)
+            return model, hist
 
         def most_confused(full_valid_ds, threshold):
             '''Display the most wrong prediction'''
@@ -102,7 +120,8 @@ class TomatoDetection:
         # Split in 16 batch
         batch_ds = full_ds.batch(16)
 
-        model = model()
+        model, hist = model(batch_ds, epochs)
+        display_loss_accuracy(hist.history)
 
         # Create a valid tf.data.Dataset
         tf_valid_set = tf.data.Dataset.from_tensor_slices(self.xtest["path"].tolist())
@@ -131,4 +150,10 @@ class TomatoDetection:
         y_true = tf.concat([batch for batch in y_true], axis=0).numpy()
         y_pred = tf.concat([batch for batch in y_pred], axis=0).numpy()
         cm = confusion_matrix(y_true, y_pred)
+        plt.figure("Confusion matrix")
         sns.heatmap(cm, annot=True, fmt='d')
+        plt.savefig(f"hm_cnn_model-im_s{im_size}-ep{epochs}-Confusion_matrix.png")
+
+        # Model saving
+#        name = (f"hm_cnn_model-im_s{im_size}-ep{epochs}.h5")
+        model.save_weights(f"hm_cnn_model-im_s{im_size}-ep{epochs}.h5")
