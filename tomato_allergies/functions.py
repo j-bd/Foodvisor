@@ -13,7 +13,9 @@ import pandas as pd
 import constants
 
 
-def add_opposite_label_data(df, dic_img_annot, exclusive_list, data_nb, img_folder, label):
+def add_opposite_label_data(
+        df, dic_img_annot, exclusive_list, data_nb, img_folder, label
+    ):
     '''Add imgages and label from file annotation to a panda dataframe excluding
     specific data'''
     count = 0
@@ -42,8 +44,6 @@ def collect_data(df,dic_img_annot, list_label, img_folder, label):
 def label_selection(df, column_name, column_label_id, target):
     '''Select label_id corresponding to target in to a pandas dataframe column'''
     label_selec_df = df[df[column_name].str.contains(target)]
-    #!!! Drop class containing "without tomato", to be improved by re exp
-    label_selec_df = label_selec_df.drop(index = 639)
     list_label = label_selec_df[column_label_id].tolist()
     return list_label
 
