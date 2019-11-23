@@ -16,4 +16,4 @@ LABEL_ID = "labelling_id"
 # Label column french name in label file
 LABEL_NAME_FR = "labelling_name_fr"
 # Element to be detected (here: tomato)
-TARGET = 'omate'
+TARGET = r"^(?!.*sans).*omate.*$"
