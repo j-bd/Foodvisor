@@ -142,13 +142,14 @@ class TomatoDetection:
 
         self.confusion_matrix(model, epochs, "xception_le_tr_model")
 
-        model.save_weights(f"xception_le_tr_model-im_s{self.im_resize}-ep{epochs}.h5")
+        model.save_weights(f"xception_le_tr-weights-im_s{self.im_resize}-ep{epochs}.h5")
+        model.save(f"xception_le_tr-model-im_s{self.im_resize}-ep{epochs}.h5")
 
 
-    def home_made_cnn(self, epochs):
-        '''Use an home made CNN to detect tomatoes'''
+    def custom_cnn(self, epochs):
+        '''Use a custom CNN to detect tomatoes'''
         def model(train_ds, val_ds, epochs):
-            '''Home made model creation'''
+            '''Custom model creation'''
             model = tf.keras.Sequential([
                 tf.keras.layers.Conv2D(filters=32, kernel_size=3, padding="same", activation="relu", input_shape=[self.im_resize, self.im_resize, 3]),
                 tf.keras.layers.MaxPool2D(pool_size=2, strides=2, padding='valid'),
@@ -179,10 +180,11 @@ class TomatoDetection:
             return model, hist
 
         model, hist = model(self.train_dataset, self.validation_dataset, epochs)
-        self.display_loss_accuracy(hist.history, epochs, "hm_cnn_model")
+        self.display_loss_accuracy(hist.history, epochs, "custom_cnn_model")
 
         model.evaluate(self.batch_test_ds)
 
-        self.confusion_matrix(model, epochs, "hm_cnn_model")
+        self.confusion_matrix(model, epochs, "custom_cnn_model")
 
-        model.save_weights(f"hm_cnn_model-im_s{self.im_resize}-ep{epochs}.h5")
+        model.save_weights(f"custom_cnn-weights-im_s{self.im_resize}-ep{epochs}.h5")
+        model.save(f"custom_cnn-model-im_s{self.im_resize}-ep{epochs}.h5")
