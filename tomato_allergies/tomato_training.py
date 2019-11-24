@@ -12,7 +12,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 
-class TomatoDetection:
+class TomatoTraining:
     '''class to detect tomato in images'''
 
     def __init__(self, df, im_resize):
@@ -20,11 +20,11 @@ class TomatoDetection:
         self.df = df
         self.im_resize = im_resize
 
-    def data_split(self, random_state, test_size, stratify=False):
+    def data_split(self, test_size):
         '''Create set of df : xtrain, xtest, ytrain, ytest'''
         self.xtrain, self.xtest, self.ytrain, self.ytest = train_test_split(
-            self.df.iloc[:, :3], self.df.iloc[:,-1], random_state = 42,
-            test_size = 0.2, stratify=self.df.iloc[:,-1]
+            self.df.iloc[:, :3], self.df.iloc[:, -1], random_state=42,
+            test_size=test_size, stratify=self.df.iloc[:, -1]
         )
 
     def data_preparation(self):
@@ -77,35 +77,46 @@ class TomatoDetection:
         t_loss, t_acc, v_loss, v_acc = list_hist.keys()
         plt.figure("Training history", figsize=(15.0, 5.0))
         plt.subplot(121)
-        plt.plot(range(1, len(list_hist[t_loss]) + 1), list_hist[t_loss], label="train loss function")
-        plt.plot(range(1, len(list_hist[v_loss]) + 1), list_hist[v_loss], label="validation loss function")
+        plt.plot(
+            range(1, len(list_hist[t_loss]) + 1),
+            list_hist[t_loss], label="train loss function"
+        )
+        plt.plot(
+            range(1, len(list_hist[v_loss]) + 1),
+            list_hist[v_loss], label="validation loss function"
+        )
         plt.title("Loss function evolution")
         plt.legend()
         plt.xlabel("Number of iterations")
         plt.ylabel("Loss value")
         plt.subplot(122)
-        plt.plot(range(1, len(list_hist[t_acc]) + 1), list_hist[t_acc], label="train accuracy")
-        plt.plot(range(1, len(list_hist[v_acc]) + 1), list_hist[v_acc], label="validation accuracy")
+        plt.plot(
+            range(1, len(list_hist[t_acc]) + 1), list_hist[t_acc], label="train accuracy"
+        )
+        plt.plot(
+            range(1, len(list_hist[v_acc]) + 1), list_hist[v_acc],
+            label="validation accuracy"
+        )
         plt.title("Accuracy evolution")
         plt.legend()
         plt.xlabel("Number of iterations")
         plt.ylabel("Accuracy value")
         plt.show()
-        plt.savefig(f"{name}-im_s{self.im_resize}-ep{epochs}-Training.png")
+        plt.savefig(f"{name}-im_s{self.im_resize}-ep{epochs}-training.png")
 
     def confusion_matrix(self, model, epochs, name):
         '''Display and save a confusion matrix heatmap'''
         y_true = []
         y_pred = []
         for batch, true_labels in self.batch_test_ds.take(-1):
-          y_true += [true_labels.numpy()]
-          y_pred += [model.predict_classes(batch)]
+            y_true += [true_labels.numpy()]
+            y_pred += [model.predict_classes(batch)]
         y_true = tf.concat([batch for batch in y_true], axis=0).numpy()
         y_pred = tf.concat([batch for batch in y_pred], axis=0).numpy()
         cm = confusion_matrix(y_true, y_pred)
         plt.figure("Confusion matrix")
         sns.heatmap(cm, annot=True, fmt='d')
-        plt.savefig(f"{name}-im_s{self.im_resize}-ep{epochs}-Confusion_matrix.png")
+        plt.savefig(f"{name}-im_s{self.im_resize}-ep{epochs}-confusion_matrix.png")
 
     def xception_cnn(self, epochs):
         '''Use a pre-trained model to realize detection'''
@@ -113,7 +124,7 @@ class TomatoDetection:
             '''Xception model adaptation'''
             model = tf.keras.applications.xception.Xception(
                 input_shape=(self.im_resize, self.im_resize, 3),
-                include_top = False, weights = "imagenet"
+                include_top=False, weights="imagenet"
             )
             model.trainable = False
             model = tf.keras.Sequential([
@@ -127,19 +138,19 @@ class TomatoDetection:
                 staircase=True
             )
             model.compile(
-                optimizer=tf.keras.optimizers.Adam(learning_rate = lr_schedule),
-                loss = tf.keras.losses.SparseCategoricalCrossentropy(),
-                metrics = [tf.keras.metrics.SparseCategoricalAccuracy()]
+                optimizer=tf.keras.optimizers.Adam(learning_rate=lr_schedule),
+                loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+                metrics=[tf.keras.metrics.SparseCategoricalAccuracy()]
             )
             model.summary()
             hist = model.fit(train_ds, validation_data=val_ds, epochs=epochs)
             return model, hist
 
         model, hist = model(self.train_dataset, self.validation_dataset, epochs)
-        self.display_loss_accuracy(hist.history, epochs, "xception_le_tr_model")
+        self.display_loss_accuracy(hist.history, epochs, "xception_le_tr")
 
         model.evaluate(self.batch_test_ds)
-        self.confusion_matrix(model, epochs, "xception_le_tr_model")
+        self.confusion_matrix(model, epochs, "xception_le_tr")
 
         self.model_path = (f"xception_le_tr-im_s{self.im_resize}-ep{epochs}-model.h5")
         model.save_weights(f"xception_le_tr-im_s{self.im_resize}-ep{epochs}-weights.h5")
@@ -160,8 +171,8 @@ class TomatoDetection:
                 tf.keras.layers.Flatten(),
                 tf.keras.layers.Dense(units=64, activation='relu'),
                 tf.keras.layers.Dropout(0.05),
-                tf.keras.layers.Dense(units=32, activation ="relu"),
-                tf.keras.layers.Dense(units=16, activation ="relu"),
+                tf.keras.layers.Dense(units=32, activation="relu"),
+                tf.keras.layers.Dense(units=16, activation="relu"),
                 tf.keras.layers.Dense(units=1, activation='sigmoid')
             ])
             # Schedule learning rate creation
@@ -171,19 +182,19 @@ class TomatoDetection:
                 staircase=True
             )
             model.compile(
-                optimizer = tf.keras.optimizers.Adam(lr_schedule),
-                loss= tf.keras.losses.binary_crossentropy,
-                metrics = [tf.keras.metrics.binary_accuracy]
+                optimizer=tf.keras.optimizers.Adam(lr_schedule),
+                loss=tf.keras.losses.binary_crossentropy,
+                metrics=[tf.keras.metrics.binary_accuracy]
             )
             model.summary()
             hist = model.fit(train_ds, validation_data=val_ds, epochs=epochs)
             return model, hist
 
         model, hist = model(self.train_dataset, self.validation_dataset, epochs)
-        self.display_loss_accuracy(hist.history, epochs, "custom_cnn_model")
+        self.display_loss_accuracy(hist.history, epochs, "custom_cnn")
 
         model.evaluate(self.batch_test_ds)
-        self.confusion_matrix(model, epochs, "custom_cnn_model")
+        self.confusion_matrix(model, epochs, "custom_cnn")
 
         self.model_path = (f"custom_cnn-im_s{self.im_resize}-ep{epochs}-model.h5")
         model.save_weights(f"custom_cnn-im_s{self.im_resize}-ep{epochs}-weights.h5")
