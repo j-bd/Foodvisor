@@ -48,7 +48,7 @@ def label_selection(df, column_name, column_label_id, target):
     return list_label
 
 def settle_data(label, images_features):
-    '''From a file label + images details file, return a full dataframe and
+    '''From a label file + images details file, return a full dataframe and
     xtrain, xtest, ytrain, ytest dataframe division'''
     label_df = pd.read_csv(label)
     with open(images_features) as annot:
@@ -68,17 +68,3 @@ def settle_data(label, images_features):
         constants.PATH_IMGS_FOLDER, 0
     )
     return input_df
-
-#
-### In main.py
-#
-## Open files
-#
-#
-## In tomato_detection.py in class
-## A verifier si necessaire
-##import skimage.io
-##for index, line in input_df.iterrows():
-##    image = skimage.io.imread(line[0])
-##    line[2] = image
-#
