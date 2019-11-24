@@ -6,6 +6,8 @@ Created on Wed Nov 20 08:17:05 2019
 @author: j-bd
 """
 import logging
+import json
+import ast
 
 import database
 import constants
@@ -29,6 +31,21 @@ def check_values(solution, status):
             logging.info(
                 f"{key} solution is '{solution[key]}' and Status is '{status[key]}'"
             )
+
+def data_loading():
+    '''Load data from given files'''
+    with open(constants.BUILD) as f_build:
+        build = f_build.read()
+        build = build.replace('null', 'None')
+        build = ast.literal_eval(build)
+    with open(constants.EDITS) as f_edits:
+        edits = f_edits.read()
+        edits = ast.literal_eval(edits)
+    with open(constants.EXTRACT) as f_extract:
+        extract = json.load(f_extract)
+    with open(constants.EX_ANSWER) as f_answer:
+        answer = json.load(f_answer)
+    return build, edits, extract, answer
 
 def proceed_food_data(build, extract, edits):
     '''Execute test'''
@@ -54,10 +71,9 @@ def main():
     check_values(constants.EX_ANSWER_1, status)
 
     logging.info("Test 2")
-    status = proceed_food_data(
-        constants.BUILD, constants.EXTRACT, constants.EDITS
-    )
-    check_values(constants.EX_ANSWER, status)
+    build, edits, extract, answer = data_loading()
+    status = proceed_food_data(build, extract, edits)
+    check_values(answer, status)
 
 if __name__ == "__main__":
     main()
