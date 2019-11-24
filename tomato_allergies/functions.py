@@ -13,6 +13,7 @@ import pandas as pd
 
 import constants
 
+
 def arguments_parser():
     '''Get the informations from the operator'''
     parser = argparse.ArgumentParser(
@@ -61,11 +62,21 @@ def arguments_parser():
         The following arguments are mandatory: --command (activation map process),
         --model_path (path to model file with .h5 extension), --image_path (path to
         image file with .jpeg extension)
+
+
+        To lauch detection on image:
+        -------------------------------------
+        python main.py --command predict --model_path path/to/model.h5
+        --image_path path/to/image.jpeg
+
+        The following arguments are mandatory: --command (prediction on the image),
+        --model_path (path to model file with .h5 extension), --image_path (path to
+        image file with .jpeg extension)
         '''
     )
     parser.add_argument(
         "-cmd", "--command", required=True,
-        help="choice between 'custom', 'xception' and 'visualize_cam'"
+        help="choice between 'custom', 'xception', 'visualize_cam' and 'predict'"
     )
     parser.add_argument(
         "-im_r", "--image_resize", type=int, default=300,
@@ -104,10 +115,10 @@ def arguments_parser():
 
 def check_inputs(args):
     '''Check if inputs are right'''
-    if args.command not in ["custom", "xception", "visualize_cam"]:
+    if args.command not in ["custom", "xception", "visualize_cam", "predict"]:
         raise ValueError(
             "Your choice for '-c', '--command' must be either custom' or "
-            "'xception' or 'visualize_cam'."
+            "'xception' or 'visualize_cam' or 'predict'."
         )
     if args.command in ["custom", "xception"]:
         if not 0.05 <= args.split_rate <= 0.3:
@@ -126,7 +137,7 @@ def check_inputs(args):
             raise FileNotFoundError(
                 "Your choice for '-if', '--image_folder' is not a valide folder."
             )
-    if args.command == "visualize_cam":
+    if args.command in ["visualize_cam", "predict"]:
         if not os.path.isfile(args.model_path):
             raise FileNotFoundError(
                 "Your choice for '-m', '--model_path' is not a valide file."
@@ -137,21 +148,22 @@ def check_inputs(args):
             )
 
 def add_opposite_label_data(
-        df, dic_img_annot, exclusive_list, data_nb, img_folder, label
+        df, dic_img_annot, exclusive_list, img_folder, label
     ):
     '''Add imgages and label from file annotation to a panda dataframe excluding
     specific data'''
     count = 0
+    data_pos_nb = len(df)
     for key in dic_img_annot.keys():
-        if (key not in exclusive_list and count < data_nb):
+        if (key not in exclusive_list and count < data_pos_nb):
             df = df.append(
                 {"path" : os.path.join(img_folder, key), "img_names" : key,
-                "tomatoes" : label}, ignore_index=True
+                 "tomatoes" : label}, ignore_index=True
             )
             count += 1
     return df
 
-def collect_data(df,dic_img_annot, list_label, img_folder, label):
+def collect_data(df, dic_img_annot, list_label, img_folder, label):
     '''Add imgages and label from file annotation to a panda dataframe if
     corresponding to a pre-determinated label contains in a list'''
     for key in dic_img_annot.keys():
@@ -160,7 +172,7 @@ def collect_data(df,dic_img_annot, list_label, img_folder, label):
             if dic_img_annot[key][element]['id'] in list_label:
                 df = df.append(
                     {"path" : os.path.join(img_folder, key), "img_names" : key,
-                    "tomatoes" : label}, ignore_index=True
+                     "tomatoes" : label}, ignore_index=True
                 )
     return df.drop_duplicates(subset="img_names")
 
@@ -187,7 +199,7 @@ def settle_data(args):
     )
 
     input_df = add_opposite_label_data(
-        tomatoes_df, features_db, tomatoes_df["img_names"].tolist(), len(tomatoes_df),
+        tomatoes_df, features_db, tomatoes_df["img_names"].tolist(),
         args.image_folder, 0
     )
     return input_df
