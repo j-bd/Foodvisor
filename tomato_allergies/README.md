@@ -46,10 +46,10 @@ During the training, theses elements are saved in the current folder:
 * training.png (loss and accuracy functions)
 * confusion_matrix.png (confusion matrix)
 
-For the activation map execution:
+During the activation map execution:
 * class_activation_maps.png (activation map result)
 
-For the prediction execution:
+During the prediction execution:
 * predict.png (image with probability of tomato presence)
 
 
@@ -66,7 +66,7 @@ Transfer Learning (Keras Xception based on imagenet):
 ![Image of xception matrix](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/xception_le_tr-im_s300-ep60-confusion_matrix.png)
 
 
-Predictions results:
+Predictions results.
 
 Custom CNN:
 ![Image of custom pred](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/predict-custom.png)
@@ -80,10 +80,10 @@ Activation map based on the custom CNN:
 
 ## Discussion:
 
-I took the decision to offer the possibility to train two differents CNN. Indeed, we can have our own private CNN that we want to customize during the R&D process. Also, for a fast first solution in case of commercial POC for instance, I offered the possibility to use transfer learning.
+I took the decision to offer the possibility to train two different CNN. Indeed, we can have our own private CNN that we want to customize during the R&D process. Also, for a fast first solution in case of commercial POC for instance, I offered the possibility to use transfer learning.
 
 The next steps could be :
-* Split tomato type (jus, sauce and full vegetable) to see if it improves detection
+* Split tomato type (juice, sauce and full vegetable) to see if it improves detection
 * Implement a GAN CNN in order to improve input data and results
 * Displaying box detection
 * Displaying mask
