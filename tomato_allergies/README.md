@@ -55,7 +55,7 @@ During the prediction execution:
 
 ## Few results:
 
-Training results.
+__Training results.__
 
 Custom CNN:
 ![Image of custom functions](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/custom_cnn-im_s300-ep25-training.png)
@@ -66,7 +66,7 @@ Transfer Learning (Keras Xception based on imagenet):
 ![Image of xception matrix](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/xception_le_tr-im_s300-ep60-confusion_matrix.png)
 
 
-Predictions results.
+__Predictions results.__
 
 Custom CNN:
 ![Image of custom pred](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/predict-custom.png)
@@ -84,7 +84,7 @@ I took the decision to offer the possibility to train two different CNN. Indeed,
 
 The next steps could be :
 * Split tomato type (juice, sauce and full vegetable) to see if it improves detection
-* Implement a GAN CNN in order to improve input data and results
+* Implement a GAN in order to improve input data and results
 * Displaying box detection
 * Displaying mask
 * Spread activation map execution to others models
