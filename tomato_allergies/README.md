@@ -4,13 +4,15 @@
 
 You will find here the implementation of tasks requested on this [page](https://github.com/Foodvisor/home-assignment).
 
+Data can be downloaded by clicking [here](https://drive.google.com/file/d/1N7NSt8vZT20wslX00Fpeyx989QjK5GFZ/view?usp=sharing).
+
 
 ## Overview of repository
 
 This folder is organised as:
 * ```main.py```: help to launch automatically training or detection tasks
 * ```functions.py```: different functions helping for data setup
-* ```tomato_training```: class offering all the necessary elements CNN training as: train and test data split, possibility to use two CNN (a custom one and transfer learning based on imagenet), model evaluation (loss and accuracy functions, confusion matrix)
+* ```tomato_training```: class offering all the necessary CNN elements training as: train and test data split, possibility to use __two CNN__ (a __custom one__ and __transfer learning based on Keras Xception imagenet__), model evaluation (loss and accuracy functions, confusion matrix)
 * ```detection.py```: class offering the possibility to apply detection with a previous model on an image. There is also the possibility to apply activation extraction module based on the custom model.
 * ```constants.py```: columns names and Regex
 
@@ -48,3 +50,47 @@ For the activation map execution:
 For the prediction execution:
 * predict.png (image with probability of tomato presence)
 
+
+## Few results:
+
+Training results.
+
+Custom CNN:
+![Image of custom functions](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/custom_cnn-im_s300-ep25-training.png)
+![Image of custom matrix](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/custom_cnn-im_s300-ep25-confusion_matrix.png)
+
+Transfer Learning (Keras Xception based on imagenet):
+![Image of xception functions](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/xception_le_tr-im_s300-ep60-training.png)
+![Image of xception matrix](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/xception_le_tr-im_s300-ep60-confusion_matrix.png)
+
+
+Predictions results:
+
+Custom CNN:
+![Image of custom pred](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/predict-custom.png)
+
+![Image of xception pred](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/Transfer_le-predict.png)
+
+
+## Discussion:
+
+I took the decision to offer the possibility to train two differents CNN. Indeed, we can have our own CNN that we want to customize during thr R&D process. Also, for a fast first solution, in case of commercial POC, I offered the possibility to use transfer learning.
+
+The next steps could be :
+* Implement a GAN CNN in order to improve input data and results
+* Displaying box detection
+* Displaying mask
+* Spread activation map execution to others models
+
+
+## Citations
+
+```@misc{chollet2015keras,
+  title={Keras},
+  author={Chollet, Fran\c{c}ois and others},
+  year={2015},
+  howpublished={\url{https://keras.io}},
+}```
+
+For activation map :
+https://github.com/raghakot/keras-vis/blob/master/examples/resnet/attention.ipynb
