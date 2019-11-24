@@ -4,7 +4,9 @@
 
 You will find here the implementation of tasks requested on this [page](https://github.com/Foodvisor/home-assignment).
 
-Data can be downloaded by clicking [here](https://drive.google.com/file/d/1N7NSt8vZT20wslX00Fpeyx989QjK5GFZ/view?usp=sharing).
+Image Data can be downloaded by clicking [here](https://drive.google.com/file/d/1N7NSt8vZT20wslX00Fpeyx989QjK5GFZ/view?usp=sharing).
+
+File Data can be downloaded by clicking [here](https://github.com/Foodvisor/home-assignment/releases/tag/v0.1.0).
 
 
 ## Overview of repository
@@ -69,14 +71,19 @@ Predictions results:
 Custom CNN:
 ![Image of custom pred](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/predict-custom.png)
 
+Transfer Learning (Keras Xception based on imagenet):
 ![Image of xception pred](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/Transfer_le-predict.png)
+
+Activation map based on the custom CNN:
+![Image of cam](https://raw.githubusercontent.com/j-bd/foodvisor/master/tomato_allergies/readme/class_activation_maps.png)
 
 
 ## Discussion:
 
-I took the decision to offer the possibility to train two differents CNN. Indeed, we can have our own CNN that we want to customize during thr R&D process. Also, for a fast first solution, in case of commercial POC, I offered the possibility to use transfer learning.
+I took the decision to offer the possibility to train two differents CNN. Indeed, we can have our own CNN that we want to customize during thr R&D process. Also, for a fast first solution in case of commercial POC for instance, I offered the possibility to use transfer learning.
 
 The next steps could be :
+* Split tomato type (jus, sauce and full vegetable) to see if it improves detection
 * Implement a GAN CNN in order to improve input data and results
 * Displaying box detection
 * Displaying mask
@@ -85,6 +92,9 @@ The next steps could be :
 
 ## Citations
 
+For activation map :
+https://github.com/raghakot/keras-vis/blob/master/examples/resnet/attention.ipynb
+
 ```@misc{chollet2015keras,
   title={Keras},
   author={Chollet, Fran\c{c}ois and others},
@@ -92,5 +102,4 @@ The next steps could be :
   howpublished={\url{https://keras.io}},
 }```
 
-For activation map :
-https://github.com/raghakot/keras-vis/blob/master/examples/resnet/attention.ipynb
+
