@@ -11,6 +11,7 @@ from vis.utils import utils
 import matplotlib.pyplot as plt
 import numpy as np
 
+import matplotlib.cm as cm
 
 class Detection:
     '''Class activation maps'''
@@ -28,6 +29,7 @@ class Detection:
             self.model, layer_idx=layer_idx, filter_indices=1, seed_input=img,
             penultimate_layer_idx=penultimate_layer
         )
+        jet_heatmap = np.uint8(cm.jet(cam)[..., :3] * 255)
         plt.figure("Class activation maps", figsize=(20.0, 5.0))
         plt.subplot(131)
         plt.title(img_path.split("/")[-1])
@@ -39,6 +41,7 @@ class Detection:
         plt.title("Overlay")
         plt.imshow(overlay(cam, img, alpha=0.25))
         plt.savefig(f"{img_path.split('/')[-1]}-class_activation_maps.png")
+        return jet_heatmap, img
 
     def predict(self, img_path):
         '''Give an image prediction related to a model'''

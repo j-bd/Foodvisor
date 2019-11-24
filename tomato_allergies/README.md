@@ -2,7 +2,7 @@
 
 # Home assignment - Tomato allergies
 
-You will find here the implementation of tasks requested on this [page](https://github.com/Foodvisor/home-assignment).
+You will find in this repository the implementation of tasks requested on this [page](https://github.com/Foodvisor/home-assignment).
 
 Image Data can be downloaded by clicking [here](https://drive.google.com/file/d/1N7NSt8vZT20wslX00Fpeyx989QjK5GFZ/view?usp=sharing).
 
@@ -80,7 +80,7 @@ Activation map based on the custom CNN:
 
 ## Discussion:
 
-I took the decision to offer the possibility to train two differents CNN. Indeed, we can have our own CNN that we want to customize during thr R&D process. Also, for a fast first solution in case of commercial POC for instance, I offered the possibility to use transfer learning.
+I took the decision to offer the possibility to train two differents CNN. Indeed, we can have our own private CNN that we want to customize during the R&D process. Also, for a fast first solution in case of commercial POC for instance, I offered the possibility to use transfer learning.
 
 The next steps could be :
 * Split tomato type (jus, sauce and full vegetable) to see if it improves detection
