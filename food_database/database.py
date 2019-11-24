@@ -11,16 +11,16 @@ import copy
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 class Database:
-    '''class making able to create items and linked with sub-items'''
+    '''Class making able to create items and linked with sub-items'''
 
     def __init__(self, root_node):
-        '''create a new object with the following base structure'''
+        '''Create a new object with the following base structure'''
         self.name = root_node
         self.graph = {self.name : [None]}
         self.im_extract = list()
 
     def add_nodes(self, list_tup):
-        '''edit graph with parents and children nodes'''
+        '''Edit graph with parents and children nodes'''
         for child_id, parent_id in list_tup:
             if parent_id in self.graph.keys():
                 self.graph[child_id] = list()
@@ -35,14 +35,14 @@ class Database:
                 )
 
     def add_extract(self, dic):
-        '''link image information with current graph'''
+        '''Link image information with current graph'''
         self.im_extract.append((dic, copy.deepcopy(self.graph)))
 
     def get_extract_status(self):
-        '''give the status of each image in add_extract dictionary'''
+        '''Give the status of each image in add_extract dictionary'''
 
         def invalid_label_test(list_labels, dic):
-            '''check if the value exist in the dictionary'''
+            '''Check if the value exist in the dictionary'''
             for label in list_labels:
                 if label not in dic.keys():
                     list_values = list(dic.values())
