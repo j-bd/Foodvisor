@@ -139,11 +139,11 @@ class TomatoDetection:
         self.display_loss_accuracy(hist.history, epochs, "xception_le_tr_model")
 
         model.evaluate(self.batch_test_ds)
-
         self.confusion_matrix(model, epochs, "xception_le_tr_model")
 
-        model.save_weights(f"xception_le_tr-weights-im_s{self.im_resize}-ep{epochs}.h5")
-        model.save(f"xception_le_tr-model-im_s{self.im_resize}-ep{epochs}.h5")
+        self.model_path = (f"xception_le_tr-im_s{self.im_resize}-ep{epochs}-model.h5")
+        model.save_weights(f"xception_le_tr-im_s{self.im_resize}-ep{epochs}-weights.h5")
+        model.save(self.model_path)
 
 
     def custom_cnn(self, epochs):
@@ -167,14 +167,14 @@ class TomatoDetection:
             # Schedule learning rate creation
             initial_learning_rate = 0.0001
             lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-                initial_learning_rate,
-                decay_steps=500,
-                decay_rate=0.96,
+                initial_learning_rate, decay_steps=500, decay_rate=0.96,
                 staircase=True
             )
-            model.compile(optimizer = tf.keras.optimizers.Adam(lr_schedule),
-                          loss= tf.keras.losses.binary_crossentropy,
-                          metrics = [tf.keras.metrics.binary_accuracy])
+            model.compile(
+                optimizer = tf.keras.optimizers.Adam(lr_schedule),
+                loss= tf.keras.losses.binary_crossentropy,
+                metrics = [tf.keras.metrics.binary_accuracy]
+            )
             model.summary()
             hist = model.fit(train_ds, validation_data=val_ds, epochs=epochs)
             return model, hist
@@ -183,8 +183,8 @@ class TomatoDetection:
         self.display_loss_accuracy(hist.history, epochs, "custom_cnn_model")
 
         model.evaluate(self.batch_test_ds)
-
         self.confusion_matrix(model, epochs, "custom_cnn_model")
 
-        model.save_weights(f"custom_cnn-weights-im_s{self.im_resize}-ep{epochs}.h5")
-        model.save(f"custom_cnn-model-im_s{self.im_resize}-ep{epochs}.h5")
+        self.model_path = (f"custom_cnn-im_s{self.im_resize}-ep{epochs}-model.h5")
+        model.save_weights(f"custom_cnn-im_s{self.im_resize}-ep{epochs}-weights.h5")
+        model.save(self.model_path)
